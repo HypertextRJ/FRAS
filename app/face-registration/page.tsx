@@ -108,40 +108,43 @@ export default function FaceRegistration() {
     e.preventDefault()
     setLoading(true)
     setError("")
-
+  
     if (!capturedImage) {
       setError("Please capture your face image")
       setLoading(false)
       return
     }
-
+  
     try {
       const user = auth.currentUser
       if (!user) throw new Error("No authenticated user found")
-
+  
       await updateDoc(doc(db, "users", user.uid), {
         profileImage: capturedImage,
         registrationDate: new Date().toISOString(),
       })
-
-      // Only send the verification email once.
-      if (!emailVerificationSent) {
+  
+      // Only send the verification email if not already sent and if the user is not verified.
+      if (!emailVerificationSent && !user.emailVerified) {
         try {
           await sendEmailVerification(user, {
             url: `${window.location.origin}/dashboard`,
             handleCodeInApp: true,
           })
           setEmailVerificationSent(true)
+          // Optionally, start a cooldown timer here.
         } catch (verificationError: any) {
           console.error("Verification error:", verificationError)
           if (verificationError.code === "auth/too-many-requests") {
-            throw new Error("Too many verification requests. Please try again later.")
+            setError("Too many verification requests. Please try again later.")
+            // Optionally, implement additional logic to handle cooldown.
           } else {
-            throw new Error("Failed to send verification email")
+            setError("Failed to send verification email")
           }
+          return
         }
       }
-
+  
       setRegistrationComplete(true)
     } catch (error: any) {
       setError(error.message)
@@ -149,6 +152,7 @@ export default function FaceRegistration() {
       setLoading(false)
     }
   }
+  
 
   const handleContinueToDashboard = () => {
     router.push("/dashboard")
