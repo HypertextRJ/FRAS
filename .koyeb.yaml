@@ -1,0 +1,7 @@
+service:
+  name: fras-backend
+  runtime: python
+  ports:
+    - port: 5000
+  build:
+    builder: heroku/buildpacks:20
