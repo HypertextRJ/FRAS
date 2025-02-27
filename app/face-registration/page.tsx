@@ -132,18 +132,17 @@ export default function FaceRegistration() {
             handleCodeInApp: true,
           })
           setEmailVerificationSent(true)
-          // Optionally, start a cooldown timer here.
         } catch (verificationError: any) {
           console.error("Verification error:", verificationError)
           if (verificationError.code === "auth/too-many-requests") {
             setError("Too many verification requests. Please try again later.")
-            // Optionally, implement additional logic to handle cooldown.
+            return
           } else {
             setError("Failed to send verification email")
+            return
           }
-          return
         }
-      }
+      }      
   
       setRegistrationComplete(true)
     } catch (error: any) {
