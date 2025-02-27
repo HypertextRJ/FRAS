@@ -82,8 +82,5 @@ export async function POST(req: Request) {
   }
 }
 
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+export const dynamic = 'force-dynamic';
+export const bodySize = '50mb'; // Adjust size as needed for your API endpoint
